@@ -1,0 +1,10 @@
+sync:
+  defaults:
+    flushOnCreate: true
+    ignore:
+      vcs: true
+
+  solving:
+    alpha: .
+    beta: matt@solving:~/fundamentals/distill
+

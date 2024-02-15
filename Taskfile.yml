@@ -1,0 +1,33 @@
+version: "3"
+
+vars:
+  CONDA_PRELUDE:
+    sh: conda env export | sed '/dependencies:/q'
+  CONDA_DEPENDENCIES:
+    sh: conda list | grep -E -i -w "^$(conda env export --no-builds --from-history | awk '$1 == "-"{ if (key == "dependencies:") print $NF; next } {key=$1}' | sed 's/=.*//' | tr -s '\r\n' '|' | sed 's/|$//')\s" | awk '{ print $1 "=" $2 }' | sed 's/^/  - /'
+  PIP_DEPENDENCIES:
+    sh: conda env export | sed -ne '/pip:/,$ p' | grep -v "prefix"
+
+tasks:
+  git_init:
+    prompt: "This task will reset your git history! Are you sure you want to continue?"
+    cmds:
+      - |-
+        rm -rf .git
+        git init
+  gen_linux_env_yaml:
+    cmds:
+      - |-
+        tee environment.linux.yml << EOF
+        {{.CONDA_PRELUDE}}
+        {{.CONDA_DEPENDENCIES}}
+        {{.PIP_DEPENDENCIES}}
+        EOF
+  gen_macos_env_yaml:
+    cmds:
+      - |-
+        tee environment.macos.yml << EOF
+        {{.CONDA_PRELUDE}}
+        {{.CONDA_DEPENDENCIES}}
+        {{.PIP_DEPENDENCIES}}
+        EOF

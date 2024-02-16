@@ -1,5 +1,6 @@
 # mutagen
 mutagen.yml.lock
+data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -3,8 +3,13 @@ sync:
     flushOnCreate: true
     ignore:
       vcs: true
+      paths:
+        - "mutagen.yml.lock"
 
   solving:
     alpha: .
     beta: matt@solving:~/fundamentals/distill
 
+  supercloud:
+    alpha: .
+    beta: mattfeng@txe1-login.mit.edu:~/fundamentals/distill

@@ -14,7 +14,7 @@ class LanguageModel(L.LightningModule):
         super().__init__()
         self.model = Transformer(
             vocab_size=vocab_size,
-            nlayers=32,
+            nlayers=64,
             nhid=4096,
             ninp=1024,
             nhead=64,
@@ -26,18 +26,24 @@ class LanguageModel(L.LightningModule):
         loss = F.nll_loss(output, tgt.view(-1))
         self.log("train_loss", loss, prog_bar=True)
         return loss
+    
+    def configure_optimizers(self):
+        return torch.optim.Adam(self.parameters(), lr=0.1)
 
 
 L.seed_everything(42)
 
 # data
 dataset = WikiText2()
-train_dataloader = DataLoader(dataset)
+train_dataloader = DataLoader(dataset, num_workers=39)
 
 # model
 model = LanguageModel(vocab_size=dataset.vocab_size)
 
 # trainer
-trainer = L.Trainer(accelerator="cuda", devices=2, strategy=FSDPStrategy())
+policy = {nn.TransformerEncoderLayer, nn.TransformerDecoderLayer}
+# strategy = FSDPStrategy(auto_wrap_policy=policy)
+# trainer = L.Trainer(accelerator="cuda", devices=2, strategy=strategy)
+trainer = L.Trainer(accelerator="cuda", devices=2, strategy="ddp")
 trainer.fit(model, train_dataloader)
 trainer.print(torch.cuda.memory_summary())

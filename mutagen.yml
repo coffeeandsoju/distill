@@ -4,7 +4,9 @@ sync:
     ignore:
       vcs: true
       paths:
+        - "mutagen.yml"
         - "mutagen.yml.lock"
+        - "lightning_logs"
 
   solving:
     alpha: .

@@ -21,6 +21,7 @@ tasks:
         tee environment.linux.yml << EOF
         {{.CONDA_PRELUDE}}
         {{.CONDA_DEPENDENCIES}}
+        - pip
         {{.PIP_DEPENDENCIES}}
         EOF
   gen_macos_env_yaml:
@@ -29,5 +30,6 @@ tasks:
         tee environment.macos.yml << EOF
         {{.CONDA_PRELUDE}}
         {{.CONDA_DEPENDENCIES}}
+        - pip
         {{.PIP_DEPENDENCIES}}
         EOF

@@ -39,7 +39,7 @@ class CosineWarmupScheduler(optim.lr_scheduler._LRScheduler):
     def get_lr_factor(self, epoch):
         # linear until self.warmup, then cosine decay
         if epoch <= self.warmup:
-            lr_factor = epoch / self.warmup
+            lr_factor = (epoch + 1) / (self.warmup + 1)
         else:
             lr_factor = 0.5 * (
                 1

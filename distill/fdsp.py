@@ -70,6 +70,7 @@ class LanguageModel(L.LightningModule):
             nhid=2048,
             ninp=1024,
             nhead=16,
+            dropout=0
         )
 
     def training_step(self, batch):
@@ -81,15 +82,19 @@ class LanguageModel(L.LightningModule):
         return loss
 
     def configure_optimizers(self):
-        optimizer = optim.AdamW(self.parameters(), lr=0.03)
-        scheduler = CosineWarmupScheduler(optimizer=optimizer, warmup=10, max_iters=100)
-        return [optimizer], [scheduler]
+        # optimizer = optim.RAdam(self.parameters(), lr=0.03)
+        # optimizer = optim.SGD(self.parameters(), lr=0.03, momentum=0.9)
+        optimizer = optim.SGD(self.parameters(), lr=0.01, momentum=0.9, nesterov=True)
+        return optimizer
+        # optimizer = optim.AdamW(self.parameters(), lr=0.03)
+        # scheduler = CosineWarmupScheduler(optimizer=optimizer, warmup=10, max_iters=100)
+        # return [optimizer], [scheduler]
         # return torch.optim.Adam(self.parameters(), lr=0.01, eps=1e-4)
         # return bnb.optim.Adam8bit(self.parameters(), lr=0.001, betas=(0.9, 0.995))
 
     def on_train_batch_end(self, outputs, batch, batch_idx):
         # logging.getLogger("lightning.pytorch").info("step")
-        if wandb.run is not None and batch_idx % 50 == 1:
+        if wandb.run is not None and batch_idx % 25 == 1:
             # logging.getLogger("lightning.pytorch").info("hook")
             self.hook()
 
@@ -98,7 +103,7 @@ L.seed_everything(42)
 
 # data
 dataset = WikiText2()
-train_dataloader = DataLoader(dataset, batch_size=16, num_workers=39)
+train_dataloader = DataLoader(dataset, batch_size=128, num_workers=39)
 
 # model
 model = LanguageModel(vocab_size=dataset.vocab_size)

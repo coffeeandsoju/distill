@@ -66,10 +66,10 @@ class LanguageModel(L.LightningModule):
 
         self.model = Transformer(
             vocab_size=self.vocab_size,
-            nlayers=int(32 * 1),
-            nhid=4096,
+            nlayers=int(32 * 0.5),
+            nhid=2048,
             ninp=1024,
-            nhead=64,
+            nhead=16,
         )
 
     def training_step(self, batch):
@@ -82,7 +82,7 @@ class LanguageModel(L.LightningModule):
 
     def configure_optimizers(self):
         optimizer = optim.AdamW(self.parameters(), lr=0.03)
-        scheduler = CosineWarmupScheduler(optimizer=optimizer, warmup=3, max_iters=100)
+        scheduler = CosineWarmupScheduler(optimizer=optimizer, warmup=10, max_iters=100)
         return [optimizer], [scheduler]
         # return torch.optim.Adam(self.parameters(), lr=0.01, eps=1e-4)
         # return bnb.optim.Adam8bit(self.parameters(), lr=0.001, betas=(0.9, 0.995))
